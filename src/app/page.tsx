@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-import { createDashboard } from "@/app/actions";
+import { createDashboard, getDashboards } from "@/app/actions";
 import Modal from "@/components/Modal";
+
+type Dashboard = {
+  id: string;
+  name: string;
+  widgets: any[];
+};
 
 export default function Home() {
   const { data: session } = authClient.useSession();
@@ -14,12 +20,20 @@ export default function Home() {
   const router = useRouter();
   const [isModalOpen, setModalOpen] = useState(false);
   const [name, setName] = useState("");
-  
-  // For demo purposes - in a real app, you would fetch this data
-  const [dashboards, setDashboards] = useState([
-    // Placeholder dashboards - in production this would come from an API
-    ...(session?.user.dashboards || [])
-  ]);
+  const [dashboards, setDashboards] = useState([]);
+
+  useEffect(() => {
+    const fetchDashboards = async () => {
+      try {
+        const data = await getDashboards();
+        setDashboards(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboards", error);
+      }
+    };
+
+    fetchDashboards();
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,11 +55,9 @@ export default function Home() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 w-full mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Olá</h1>
-        <h1 className="text-2xl font-semibold mb-2">Bem vindo,</h1>
-        <p className="text-black text-lg">{session?.user.name}</p>
+        <h1 className="text-2xl font-semibold mb-2">Bem vindo, {session?.user.name}</h1>
       </div>
       
       <div className="mb-8">
