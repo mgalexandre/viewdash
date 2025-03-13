@@ -22,7 +22,7 @@ model Todos {
 }
 
 model User {
-  id            String    @id
+  id            String      @id
   name          String
   email         String
   emailVerified Boolean
@@ -32,6 +32,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   Todos         Todos[]
+  dashboards    Dashboard[]
 
   @@unique([email])
   @@map("user")
@@ -80,4 +81,21 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Dashboard {
+  id      String   @id @default(cuid())
+  name    String
+  userId  String
+  user    User     @relation(fields: [userId], references: [id])
+  widgets Widget[]
+}
+
+model Widget {
+  id          String    @id @default(cuid())
+  name        String
+  type        String // "github", "bookmark", "note", etc.
+  data        Json // Stores widget-specific settings
+  dashboardId String
+  dashboard   Dashboard @relation(fields: [dashboardId], references: [id])
 }
