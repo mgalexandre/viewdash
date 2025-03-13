@@ -90,11 +90,15 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  {session.data && (
+                  {session.data ? (
                     <SidebarMenuButton>
                       <img className="rounded-full w-[20px] h-[20px]" src={session.data.user.image} alt="" />
                       <span>{session.data.user.name}</span>
                       <ChevronUp className="ml-auto" />
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton asChild>
+                      <Link href="/sign-in">Sign in</Link>
                     </SidebarMenuButton>
                   )}
                 </DropdownMenuTrigger>
